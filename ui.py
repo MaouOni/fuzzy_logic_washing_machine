@@ -89,7 +89,7 @@ def create_ui(root):
     graph_menu = ctk.CTkComboBox(main_frame, variable=graph_var, values=graph_options, font=("Arial", 14))
     graph_menu.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
 
-    columns = ("Tiempo de Lavado", "Temperatura", "RPM", "Tiempo de Secado", "Calidad de Lavado")
+    columns = ("Tiempo de Tela", "Suciedad", "Carga", "Tiempo de Lavado", "Temperatura")
     table = ttk.Treeview(main_frame, columns=columns, show="headings", height=1, style="Custom.Treeview")
     for col in columns:
         table.heading(col, text=col)
