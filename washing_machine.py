@@ -1,24 +1,29 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def display_wash_settings(duration, temperature, rpm, dry_time, quality):
-    result_window = tk.Toplevel(root)
-    result_window.title("Resultados")
+    settings = {
+        "Tiempo de lavado": duration,
+        "Temperatura": temperature,
+        "RPM": rpm,
+        "Tiempo de secado": dry_time,
+        "Calidad": quality
+    }
     
-    settings = [
-        f"Tiempo de lavado: {duration}",
-        f"Temperatura: {temperature}",
-        f"RPM: {rpm}",
-        f"Tiempo de secado: {dry_time}",
-        f"Calidad: {quality}"
-    ]
+    fig = Figure(figsize=(5, 4), dpi=100)
+    ax = fig.add_subplot(111)
+    ax.barh(list(settings.keys()), list(settings.values()), color='skyblue')
+    ax.set_title("Resultados de Configuración")
+    ax.set_xlabel("Valor")
     
-    for setting in settings:
-        label = tk.Label(result_window, text=setting, font=("Arial", 12))
-        label.pack(pady=5)
+    for widget in result_frame.winfo_children():
+        widget.destroy()
     
-    button = tk.Button(result_window, text="Cerrar", command=result_window.destroy)
-    button.pack(pady=10)
+    canvas = FigureCanvasTkAgg(fig, master=result_frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill='both', expand=True)
 
 def result():
     fabric_type = fabric_var.get().lower()
@@ -32,7 +37,7 @@ def result():
     else:
         fabric_weight_category = "above_15kg"
     
-    settings = {
+        settings = {
         ("seda", "poco", "below_10kg"): ("0.35 h", "30°C", "400", "Rápido", "Buena"),
         ("seda", "poco", "10_to_15kg"): ("0.47 h", "30°C", "600", "Intermedio", "Buena"),
         ("seda", "poco", "above_15kg"): ("0.50 h", "40°C", "600", "Intermedio", "Excelente"),
@@ -99,34 +104,45 @@ def on_submit():
     result()
 
 root = tk.Tk()
-root.title("Configuración")
+root.title("Configuración de Lavado")
+root.attributes('-fullscreen', True)
+
+main_frame = tk.Frame(root, padx=20, pady=20)
+main_frame.pack(expand=True, fill='both', side='left')
+
+result_frame = tk.Frame(root, padx=20, pady=20)
+result_frame.pack(expand=True, fill='both', side='right')
+
+# App name and logo
+logo_label = tk.Label(main_frame, text="LavadoApp", font=("Arial", 24, "bold"))
+logo_label.grid(row=0, columnspan=2, pady=10)
 
 # Fabric type dropdown
-tk.Label(root, text="Tipo de Tela:", font=("Arial", 12)).grid(row=0, column=0, padx=10, pady=5, sticky="w")
+tk.Label(main_frame, text="Tipo de Tela:", font=("Arial", 14)).grid(row=1, column=0, padx=10, pady=10, sticky="w")
 fabric_var = tk.StringVar()
 fabric_options = ["Seda", "Lana", "Algodón", "Mezclilla", "Delicado", "Poliéster"]
-fabric_menu = ttk.Combobox(root, textvariable=fabric_var, values=fabric_options, state="readonly")
-fabric_menu.grid(row=0, column=1, padx=10, pady=5)
+fabric_menu = ttk.Combobox(main_frame, textvariable=fabric_var, values=fabric_options, state="readonly", font=("Arial", 14))
+fabric_menu.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
 
 # Soil category dropdown with examples
-tk.Label(root, text="Suciedad:", font=("Arial", 12)).grid(row=1, column=0, padx=10, pady=5, sticky="w")
+tk.Label(main_frame, text="Suciedad:", font=("Arial", 14)).grid(row=2, column=0, padx=10, pady=10, sticky="w")
 soil_var = tk.StringVar()
 soil_options = [
     "Poco sucio (ej., tierra, sudor)",
     "Sucio (ej., pasto, manchas de comida)",
     "Muy sucio (ej., lodo, aceite, vino)"
 ]
-soil_menu = ttk.Combobox(root, textvariable=soil_var, values=soil_options, state="readonly")
-soil_menu.grid(row=1, column=1, padx=10, pady=5)
+soil_menu = ttk.Combobox(main_frame, textvariable=soil_var, values=soil_options, state="readonly", font=("Arial", 14))
+soil_menu.grid(row=2, column=1, padx=10, pady=10, sticky="ew")
 
 # Fabric weight slider
-tk.Label(root, text="Carga (kg):", font=("Arial", 12)).grid(row=2, column=0, padx=10, pady=5, sticky="w")
+tk.Label(main_frame, text="Carga (kg):", font=("Arial", 14)).grid(row=3, column=0, padx=10, pady=10, sticky="w")
 weight_var = tk.IntVar()
-weight_slider = tk.Scale(root, from_=1, to=30, orient="horizontal", length=200, tickinterval=5, variable=weight_var)
-weight_slider.grid(row=2, column=1, padx=10, pady=5)
+weight_slider = tk.Scale(main_frame, from_=1, to=30, orient="horizontal", length=300, tickinterval=5, variable=weight_var, font=("Arial", 14))
+weight_slider.grid(row=3, column=1, padx=10, pady=10, sticky="ew")
 
 # Submit button
-submit_button = tk.Button(root, text="Iniciar", command=on_submit)
-submit_button.grid(row=3, columnspan=2, pady=20)
+submit_button = tk.Button(main_frame, text="Iniciar", command=on_submit, font=("Arial", 14))
+submit_button.grid(row=4, columnspan=2, pady=20)
 
 root.mainloop()
