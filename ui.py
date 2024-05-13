@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from display import display_wash_settings
 from settings import get_wash_settings
+from tkinter import ttk
 
 def show_help():
     help_text = (
@@ -11,7 +12,7 @@ def show_help():
     )
     messagebox.showinfo("Ayuda", help_text)
 
-def on_submit(fabric_var, soil_var, weight_var, result_frame):
+def on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table):
     fabric_type = fabric_var.get().capitalize()
     soil_category = soil_var.get().split()[0].capitalize() + " Sucio"
     fabric_weight = weight_var.get()
@@ -25,9 +26,17 @@ def on_submit(fabric_var, soil_var, weight_var, result_frame):
 
     settings = get_wash_settings(fabric_type, soil_category, fabric_weight_category)
     if settings:
-        display_wash_settings(fabric_type, settings[0], result_frame)
+        display_wash_settings(graph_var.get(), fabric_type, soil_category, fabric_weight_category, settings[0], result_frame)
+        update_table(table, fabric_type, soil_category, fabric_weight_category, settings)
     else:
         messagebox.showerror("Error", "Entrada incorrecta.")
+
+
+def update_table(table, fabric_type, soil_category, fabric_weight_category, settings):
+    for i in table.get_children():
+        table.delete(i)
+    
+    table.insert("", "end", values=(fabric_type, soil_category, fabric_weight_category, *settings))
 
 def update_weight_label(weight_var, weight_label):
     weight_label.configure(text=f"Carga: {weight_var.get()} kg")
@@ -43,7 +52,7 @@ def create_ui(root):
     result_frame = ctk.CTkFrame(root)
     result_frame.pack(expand=True, fill='both', side='right', padx=20, pady=20)
 
-    logo_label = ctk.CTkLabel(main_frame, text="LavadoApp", font=("Arial", 24, "bold"))
+    logo_label = ctk.CTkLabel(main_frame, text="Fuzzy Wash", font=("Arial", 24, "bold"))
     logo_label.grid(row=0, columnspan=2, pady=10)
 
     ctk.CTkLabel(main_frame, text="Tipo de Tela:", font=("Arial", 14)).grid(row=1, column=0, padx=10, pady=10, sticky="w")
@@ -62,16 +71,48 @@ def create_ui(root):
     soil_menu = ctk.CTkComboBox(main_frame, variable=soil_var, values=soil_options, font=("Arial", 14))
     soil_menu.grid(row=2, column=1, padx=10, pady=10, sticky="ew")
 
-    ctk.CTkLabel(main_frame, text="Carga (kg):", font=("Arial", 14)).grid(row=3, column=0, padx=10, pady=10, sticky="w")
     weight_var = ctk.IntVar()
-    weight_label = ctk.CTkLabel(main_frame, text="Carga: 1 kg", font=("Arial", 14))
-    weight_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
-
     weight_slider = ctk.CTkSlider(main_frame, from_=1, to=30, number_of_steps=29, variable=weight_var, command=lambda val: update_weight_label(weight_var, weight_label))
     weight_slider.grid(row=3, column=1, padx=10, pady=10, sticky="ew")
 
-    submit_button = ctk.CTkButton(main_frame, text="Iniciar", command=lambda: on_submit(fabric_var, soil_var, weight_var, result_frame), font=("Arial", 14))
-    submit_button.grid(row=4, columnspan=2, pady=20)
+    ctk.CTkLabel(main_frame, text="Carga (kg):", font=("Arial", 14)).grid(row=3, column=0, padx=10, pady=10, sticky="w")
+    weight_label = ctk.CTkLabel(main_frame, text="Carga: 1 kg", font=("Arial", 14))
+    weight_label.grid(row=4, column=1, padx=10, pady=10, sticky="w")
+
+    ctk.CTkLabel(main_frame, text="Opciones de Gráfico:", font=("Arial", 14)).grid(row=6, column=0, padx=10, pady=10, sticky="w")
+    graph_var = ctk.StringVar()
+    graph_options = [
+        "Tipo de Tela vs Nivel de Suciedad basado en Tiempo de Lavado",
+        "Tipo de Tela vs Temperatura basado en Nivel de Suciedad",
+        "Temperatura vs Nivel de Suciedad basado en la Carga",
+        "Temperatura vs Tipo de Tela basado en la Carga",
+        "RPM vs Tipo de Tela basado en Nivel de Suciedad",
+        "RPM vs Tipo de Tela basado en la Carga",
+        "Carga vs Nivel de Suciedad basado en RPM",
+        "Carga vs Nivel de Suciedad basado en Tiempo de Secado",
+        "Tiempo de Secado vs Tipo de Tela basado en Nivel de Suciedad",
+        "Tiempo de Secado vs Tipo de Tela basado en la Carga",
+        "Calidad de Lavado vs Tipo de Tela basado en la Carga",
+        "Calidad de Lavado vs Nivel de Suciedad basado en la Carga"
+    ]
+
+    graph_menu = ctk.CTkComboBox(main_frame, variable=graph_var, values=graph_options, font=("Arial", 14))
+    graph_menu.grid(row=6, column=1, padx=10, pady=10, sticky="ew")
+
+    columns = ("Tipo de Tela", "Calidad de Lavado", "Carga", "Tiempo de Lavado (h)", "Temperatura")
+    table = ttk.Treeview(main_frame, columns=columns, show="headings", height=1, style="Custom.Treeview")
+    for col in columns:
+        table.heading(col, text=col)
+        table.column(col, anchor="center")
+    table.grid(row=7, columnspan=2)
+
+    submit_button = ctk.CTkButton(main_frame, text="Iniciar", command=lambda: on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table), font=("Arial", 14))
+    submit_button.grid(row=8, columnspan=1, pady=20)
 
     help_button = ctk.CTkButton(main_frame, text="Ayuda", command=show_help, font=("Arial", 14))
-    help_button.grid(row=5, columnspan=2, pady=10)
+    help_button.grid(row=8, columnspan=3, pady=10)
+
+    style = ttk.Style()
+    style.theme_use("clam")
+    style.configure("Custom.Treeview", background="#2e2e2e", foreground="white", fieldbackground="#2e2e2e", rowheight=25)
+    style.configure("Custom.Treeview.Heading", background="#1f1f1f", foreground="white")
