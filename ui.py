@@ -7,7 +7,7 @@ from tkinter import ttk
 def show_help():
     help_text = (
         "Esta aplicación te ayuda a configurar tu lavadora basándose en el tipo de tela que ingresas, "
-        "nivel de sucidad, y la carga. Simplemente seleccione de las diversas opciones y dele a la opción "
+        "nivel de suciedad, y la carga. Simplemente seleccione de las diversas opciones y dele a la opción "
         "de 'Iniciar' para visualizar los resultados de la configuración."
     )
     messagebox.showinfo("Ayuda", help_text)
@@ -26,11 +26,11 @@ def on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table):
 
     settings = get_wash_settings(fabric_type, soil_category, fabric_weight_category)
     if settings:
-        display_wash_settings(graph_var.get(), fabric_type, soil_category, fabric_weight_category, settings[0], result_frame)
+        duration = settings[0]  # Assuming the first item in settings is the duration
+        display_wash_settings(graph_var.get(), fabric_type, soil_category, fabric_weight_category, duration, result_frame)
         update_table(table, fabric_type, soil_category, fabric_weight_category, settings)
     else:
         messagebox.showerror("Error", "Entrada incorrecta.")
-
 
 def update_table(table, fabric_type, soil_category, fabric_weight_category, settings):
     for i in table.get_children():
@@ -79,40 +79,31 @@ def create_ui(root):
     weight_label = ctk.CTkLabel(main_frame, text="Carga: 1 kg", font=("Arial", 14))
     weight_label.grid(row=4, column=1, padx=10, pady=10, sticky="w")
 
-    ctk.CTkLabel(main_frame, text="Opciones de Gráfico:", font=("Arial", 14)).grid(row=6, column=0, padx=10, pady=10, sticky="w")
+    ctk.CTkLabel(main_frame, text="Opciones de Gráfico:", font=("Arial", 14)).grid(row=5, column=0, padx=10, pady=10, sticky="w")
     graph_var = ctk.StringVar()
     graph_options = [
         "Tipo de Tela vs Nivel de Suciedad basado en Tiempo de Lavado",
         "Tipo de Tela vs Temperatura basado en Nivel de Suciedad",
-        "Temperatura vs Nivel de Suciedad basado en la Carga",
-        "Temperatura vs Tipo de Tela basado en la Carga",
-        "RPM vs Tipo de Tela basado en Nivel de Suciedad",
-        "RPM vs Tipo de Tela basado en la Carga",
-        "Carga vs Nivel de Suciedad basado en RPM",
-        "Carga vs Nivel de Suciedad basado en Tiempo de Secado",
-        "Tiempo de Secado vs Tipo de Tela basado en Nivel de Suciedad",
-        "Tiempo de Secado vs Tipo de Tela basado en la Carga",
-        "Calidad de Lavado vs Tipo de Tela basado en la Carga",
-        "Calidad de Lavado vs Nivel de Suciedad basado en la Carga"
+        # Add more graph options as needed
     ]
-
     graph_menu = ctk.CTkComboBox(main_frame, variable=graph_var, values=graph_options, font=("Arial", 14))
-    graph_menu.grid(row=6, column=1, padx=10, pady=10, sticky="ew")
+    graph_menu.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
 
-    columns = ("Tipo de Tela", "Calidad de Lavado", "Carga", "Tiempo de Lavado (h)", "Temperatura")
+    columns = ("Tiempo de Lavado", "Temperatura", "RPM", "Tiempo de Secado", "Calidad de Lavado")
     table = ttk.Treeview(main_frame, columns=columns, show="headings", height=1, style="Custom.Treeview")
     for col in columns:
         table.heading(col, text=col)
         table.column(col, anchor="center")
-    table.grid(row=7, columnspan=2)
+    table.grid(row=6, columnspan=2, pady=10)
 
     submit_button = ctk.CTkButton(main_frame, text="Iniciar", command=lambda: on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table), font=("Arial", 14))
-    submit_button.grid(row=8, columnspan=1, pady=20)
+    submit_button.grid(row=7, columnspan=2, pady=20)
 
     help_button = ctk.CTkButton(main_frame, text="Ayuda", command=show_help, font=("Arial", 14))
-    help_button.grid(row=8, columnspan=3, pady=10)
+    help_button.grid(row=8, columnspan=2, pady=10)
 
     style = ttk.Style()
     style.theme_use("clam")
     style.configure("Custom.Treeview", background="#2e2e2e", foreground="white", fieldbackground="#2e2e2e", rowheight=25)
     style.configure("Custom.Treeview.Heading", background="#1f1f1f", foreground="white")
+

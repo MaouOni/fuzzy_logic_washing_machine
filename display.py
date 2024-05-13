@@ -63,18 +63,19 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
 
     fig = Figure(figsize=(8, 6), dpi=100)
     ax = fig.add_subplot(111, projection='3d')
-    ax.clear()
+    ax.clear()  # Clear the previous plot
 
+    # Define categories
     fabric_types = ["Seda", "Lana", "Algodón", "Mezclilla", "Delicado", "Poliéster"]
     dirtiness_levels = ["Poco Sucio", "Algo Sucio", "Muy Sucio"]
     weight_categories = ["10kg <", "10kg - 15kg", "15kg >"]
-    temperature_levels = sorted(set(int(value[1].replace("°C", "")) for value in settings.values()))
-    rpm_levels = sorted(set(value[2] for value in settings.values()))
 
+    # Initialize lists for plotting data
     x_labels = []
     y_labels = []
     z_values = []
 
+    # Populate labels and values based on the graph option
     for key, value in settings.items():
         if graph_option == "Tipo de Tela vs Nivel de Suciedad basado en Tiempo de Lavado":
             x_labels.append(key[0])
@@ -125,83 +126,33 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
             y_labels.append(key[1])
             z_values.append(key[2])
 
-    axis_categories = {
-        'x': fabric_types,
-        'y': dirtiness_levels,
-        'z': weight_categories
-    }
-
-    x = [axis_categories['x'].index(label) for label in x_labels]
-    y = [axis_categories['y'].index(label) for label in y_labels]
-    z = np.zeros(len(x))
+    # Map labels to indices in their respective categories
+    x = [fabric_types.index(label) for label in x_labels]
+    y = [dirtiness_levels.index(label) for label in y_labels]
+    z = np.zeros(len(x))  # Z always starts at 0
 
     dx = np.ones(len(x))
     dy = np.ones(len(y))
     dz = z_values
 
     ax.bar3d(x, y, z, dx, dy, dz, color='skyblue', alpha=0.6)
-    if graph_option == "Tipo de Tela vs Nivel de Suciedad basado en Tiempo de Lavado":
-        ax.set_xlabel('Tipo de Tela', labelpad=30, loc='left')
-        ax.set_ylabel('Nivel de Suciedad', labelpad=15)
-        ax.set_zlabel('Duración del Lavado (h)', labelpad=15)
-    elif graph_option == "Tipo de Tela vs Temperatura basado en Nivel de Suciedad":
-        ax.set_xlabel('Tipo de Tela', labelpad=30, loc='left')
-        ax.set_ylabel('Temperatura (°C)', labelpad=15)
-        ax.set_zlabel('Nivel de Suciedad', labelpad=15)
-    elif graph_option == "Temperatura vs Nivel de Suciedad basado en la Carga":
-        ax.set_xlabel('Temperatura (°C)', labelpad=30, loc='left')
-        ax.set_ylabel('Nivel de Suciedad', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
-    elif graph_option == "Temperatura vs Tipo de Tela basado en la Carga":
-        ax.set_xlabel('Temperatura (°C)', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
-    elif graph_option == "RPM vs Tipo de Tela basado en Nivel de Suciedad":
-        ax.set_xlabel('RPM', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Nivel de Suciedad', labelpad=15)
-    elif graph_option == "RPM vs Tipo de Tela basado en la Carga":
-        ax.set_xlabel('RPM', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
-    elif graph_option == "Carga vs Nivel de Suciedad basado en RPM":
-        ax.set_xlabel('Carga (kg)', labelpad=30, loc='left')
-        ax.set_ylabel('Nivel de Suciedad', labelpad=15)
-        ax.set_zlabel('RPM', labelpad=15)
-    elif graph_option == "Carga vs Nivel de Suciedad basado en Tiempo de Secado":
-        ax.set_xlabel('Carga (kg)', labelpad=30, loc='left')
-        ax.set_ylabel('Nivel de Suciedad', labelpad=15)
-        ax.set_zlabel('Tiempo de Secado (h)', labelpad=15)
-    elif graph_option == "Tiempo de Secado vs Tipo de Tela basado en Nivel de Suciedad":
-        ax.set_xlabel('Tiempo de Secado (h)', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Nivel de Suciedad', labelpad=15)
-    elif graph_option == "Tiempo de Secado vs Tipo de Tela basado en la Carga":
-        ax.set_xlabel('Tiempo de Secado (h)', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
-    elif graph_option == "Calidad de Lavado vs Tipo de Tela basado en la Carga":
-        ax.set_xlabel('Calidad de Lavado', labelpad=30, loc='left')
-        ax.set_ylabel('Tipo de Tela', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
-    elif graph_option == "Calidad de Lavado vs Nivel de Suciedad basado en la Carga":
-        ax.set_xlabel('Calidad de Lavado', labelpad=30, loc='left')
-        ax.set_ylabel('Nivel de Suciedad', labelpad=15)
-        ax.set_zlabel('Carga (kg)', labelpad=15)
 
+    # Plotting the specific selection
     specific_x = fabric_types.index(fabric_type)
     specific_y = dirtiness_levels.index(soil_category)
     specific_z = weight_categories.index(weight_category)
     specific_dz = duration
     ax.bar3d(specific_x, specific_y, specific_z, 1, 1, specific_dz, color='orange')
 
-    ax.set_xticks(np.arange(len(axis_categories['x'])))
-    ax.set_xticklabels(axis_categories['x'], rotation=45, ha='right')
-    ax.set_yticks(np.arange(len(axis_categories['y'])))
-    ax.set_yticklabels(axis_categories['y'])
-    ax.set_zticks(np.arange(len(axis_categories['z'])))
-    ax.set_zticklabels(axis_categories['z'])
+    # Set ticks and labels dynamically
+    ax.set_xticks(np.arange(len(fabric_types)))
+    ax.set_xticklabels(fabric_types, rotation=45, ha='right')
+    ax.set_yticks(np.arange(len(dirtiness_levels)))
+    ax.set_yticklabels(dirtiness_levels)
+    ax.set_zticks(np.arange(len(weight_categories)))
+    ax.set_zticklabels(weight_categories)
 
+    # Refresh canvas
     for widget in result_frame.winfo_children():
         widget.destroy()
 
