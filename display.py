@@ -85,46 +85,6 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
             x_labels.append(key[0])
             y_labels.append(int(value[1].replace("°C", "")))
             z_values.append(key[1])
-        elif graph_option == "Temperatura vs Nivel de Suciedad basado en la Carga":
-            x_labels.append(int(value[1].replace("°C", "")))
-            y_labels.append(key[1])
-            z_values.append(key[2])
-        elif graph_option == "Temperatura vs Tipo de Tela basado en la Carga":
-            x_labels.append(int(value[1].replace("°C", "")))
-            y_labels.append(key[0])
-            z_values.append(key[2])
-        elif graph_option == "RPM vs Tipo de Tela basado en Nivel de Suciedad":
-            x_labels.append(value[2])
-            y_labels.append(key[0])
-            z_values.append(key[1])
-        elif graph_option == "RPM vs Tipo de Tela basado en la Carga":
-            x_labels.append(value[2])
-            y_labels.append(key[0])
-            z_values.append(key[2])
-        elif graph_option == "Carga vs Nivel de Suciedad basado en RPM":
-            x_labels.append(key[2])
-            y_labels.append(key[1])
-            z_values.append(value[2])
-        elif graph_option == "Carga vs Nivel de Suciedad basado en Tiempo de Secado":
-            x_labels.append(key[2])
-            y_labels.append(key[1])
-            z_values.append(value[3])
-        elif graph_option == "Tiempo de Secado vs Tipo de Tela basado en Nivel de Suciedad":
-            x_labels.append(value[3])
-            y_labels.append(key[0])
-            z_values.append(key[1])
-        elif graph_option == "Tiempo de Secado vs Tipo de Tela basado en la Carga":
-            x_labels.append(value[3])
-            y_labels.append(key[0])
-            z_values.append(key[2])
-        elif graph_option == "Calidad de Lavado vs Tipo de Tela basado en la Carga":
-            x_labels.append(value[4])
-            y_labels.append(key[0])
-            z_values.append(key[2])
-        elif graph_option == "Calidad de Lavado vs Nivel de Suciedad basado en la Carga":
-            x_labels.append(value[4])
-            y_labels.append(key[1])
-            z_values.append(key[2])
 
     # Map labels to indices in their respective categories
     x = [fabric_types.index(label) for label in x_labels]
