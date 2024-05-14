@@ -83,7 +83,6 @@ def create_ui(root):
     graph_var = ctk.StringVar()
     graph_options = [
         "Tipo de Tela vs Nivel de Suciedad basado en Tiempo de Lavado",
-        "Tipo de Tela vs Temperatura basado en Nivel de Suciedad",
         # Add more graph options as needed
     ]
     graph_menu = ctk.CTkComboBox(main_frame, variable=graph_var, values=graph_options, font=("Arial", 14))

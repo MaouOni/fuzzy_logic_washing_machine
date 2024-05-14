@@ -81,10 +81,6 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
             x_labels.append(key[0])
             y_labels.append(key[1])
             z_values.append(value[0])
-        elif graph_option == "Tipo de Tela vs Temperatura basado en Nivel de Suciedad":
-            x_labels.append(key[0])
-            y_labels.append(int(value[1].replace("°C", "")))
-            z_values.append(key[1])
 
     # Map labels to indices in their respective categories
     x = [fabric_types.index(label) for label in x_labels]
