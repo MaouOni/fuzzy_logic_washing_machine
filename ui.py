@@ -28,15 +28,15 @@ def on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table):
     if settings:
         duration = settings[0]  # Assuming the first item in settings is the duration
         display_wash_settings(graph_var.get(), fabric_type, soil_category, fabric_weight_category, duration, result_frame)
-        update_table(table, fabric_type, soil_category, fabric_weight_category, settings)
+        update_table(table, settings)
     else:
         messagebox.showerror("Error", "Entrada incorrecta.")
 
-def update_table(table, fabric_type, soil_category, fabric_weight_category, settings):
+def update_table(table, settings):
     for i in table.get_children():
         table.delete(i)
     
-    table.insert("", "end", values=(fabric_type, soil_category, fabric_weight_category, *settings))
+    table.insert("", "end", values=(settings))
 
 def update_weight_label(weight_var, weight_label):
     weight_label.configure(text=f"Carga: {weight_var.get()} kg")
@@ -88,7 +88,7 @@ def create_ui(root):
     graph_menu = ctk.CTkComboBox(main_frame, variable=graph_var, values=graph_options, font=("Arial", 14))
     graph_menu.grid(row=5, column=1, padx=10, pady=10, sticky="ew")
 
-    columns = ("Tiempo de Tela", "Suciedad", "Carga", "Tiempo de Lavado", "Temperatura")
+    columns = ("Tiempo de Lavado", "Temperatura", "RPM", "Tiempo de Secado", "Calidad de Lavado")
     table = ttk.Treeview(main_frame, columns=columns, show="headings", height=1, style="Custom.Treeview")
     for col in columns:
         table.heading(col, text=col)
