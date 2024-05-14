@@ -3,7 +3,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from mpl_toolkits.mplot3d import Axes3D
 
-def display_wash_settings(graph_option, fabric_type, soil_category, weight_category, duration, result_frame):
+def display_wash_settings(graph_option, fabric, soil, weight, washing_duration, temperature, rpm, dry_duration, quality, result_frame):
     settings = {
         ("Seda", "Poco Sucio", "10kg <"): (0.35, "30°C", "400", "Rápido", "Buena"),
         ("Seda", "Poco Sucio", "10kg - 15kg"): (0.47, "30°C", "600", "Intermedio", "Buena"),
@@ -66,9 +66,14 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
     ax.clear()  # Clear the previous plot
 
     # Define categories
-    fabric_types = ["Seda", "Lana", "Algodón", "Mezclilla", "Delicado", "Poliéster"]
-    dirtiness_levels = ["Poco Sucio", "Algo Sucio", "Muy Sucio"]
-    weight_categories = ["10kg <", "10kg - 15kg", "15kg >"]
+    fabric_type = ["Seda", "Lana", "Algodón", "Mezclilla", "Delicado", "Poliéster"]
+    dirt_type = ["Poco Sucio", "Algo Sucio", "Muy Sucio"]
+    weight_type = ["10kg <", "10kg - 15kg", "15kg >"]
+    washing_duration_type = [0.35, 0.47, 0.50, 1.18, 2.10]
+    temperature_type = ["30°C", "40°C", "60°C"]
+    rpm = ["400", "600", "800", "1000", "1200"]
+    dry_duration = ["Rápido", "Intermedio", "Largo"]
+    quality = ["Regular", "Buena", "Excelente"]
 
     # Initialize lists for plotting data
     x_labels = []
@@ -82,31 +87,27 @@ def display_wash_settings(graph_option, fabric_type, soil_category, weight_categ
             y_labels.append(key[1])
             z_values.append(value[0])
 
-    # Map labels to indices in their respective categories
-    x = [fabric_types.index(label) for label in x_labels]
-    y = [dirtiness_levels.index(label) for label in y_labels]
-    z = np.zeros(len(x))  # Z always starts at 0
+            x = [fabric_type.index(label) for label in x_labels]
+            y = [dirt_type.index(label) for label in y_labels]
+            z = np.zeros(len(x))
 
-    dx = np.ones(len(x))
-    dy = np.ones(len(y))
-    dz = z_values
+            dx = np.ones(len(x))
+            dy = np.ones(len(y))
+            dz = z_values
+            ax.bar3d(x, y, z, dx, dy, dz, color='skyblue', alpha=0.6)
 
-    ax.bar3d(x, y, z, dx, dy, dz, color='skyblue', alpha=0.6)
+            specific_x = fabric_type.index(fabric)
+            specific_y = dirt_type.index(soil)
+            specific_z = weight_type.index(weight)
+            specific_dz = washing_duration
+            ax.bar3d(specific_x, specific_y, specific_z, 1, 1, specific_dz, color='orange')
 
-    # Plotting the specific selection
-    specific_x = fabric_types.index(fabric_type)
-    specific_y = dirtiness_levels.index(soil_category)
-    specific_z = weight_categories.index(weight_category)
-    specific_dz = duration
-    ax.bar3d(specific_x, specific_y, specific_z, 1, 1, specific_dz, color='orange')
-
-    # Set ticks and labels dynamically
-    ax.set_xticks(np.arange(len(fabric_types)))
-    ax.set_xticklabels(fabric_types, rotation=45, ha='right')
-    ax.set_yticks(np.arange(len(dirtiness_levels)))
-    ax.set_yticklabels(dirtiness_levels)
-    ax.set_zticks(np.arange(len(weight_categories)))
-    ax.set_zticklabels(weight_categories)
+            ax.set_xticks(np.arange(len(fabric_type)))
+            ax.set_xticklabels(fabric_type, rotation=45, ha='right')
+            ax.set_yticks(np.arange(len(dirt_type)))
+            ax.set_yticklabels(dirt_type)
+            ax.set_zticks(np.arange(len(weight_type)))
+            ax.set_zticklabels(weight_type)
 
     # Refresh canvas
     for widget in result_frame.winfo_children():

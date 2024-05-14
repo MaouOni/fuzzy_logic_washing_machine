@@ -14,20 +14,24 @@ def show_help():
 
 def on_submit(fabric_var, soil_var, weight_var, graph_var, result_frame, table):
     fabric_type = fabric_var.get().capitalize()
-    soil_category = soil_var.get().split()[0].capitalize() + " Sucio"
+    soil_type = soil_var.get().split()[0].capitalize() + " Sucio"
     fabric_weight = weight_var.get()
 
     if fabric_weight < 10:
-        fabric_weight_category = "10kg <"
+        weight = "10kg <"
     elif 10 <= fabric_weight <= 15:
-        fabric_weight_category = "10kg - 15kg"
+        weight = "10kg - 15kg"
     else:
-        fabric_weight_category = "15kg >"
+        weight = "15kg >"
 
-    settings = get_wash_settings(fabric_type, soil_category, fabric_weight_category)
+    settings = get_wash_settings(fabric_type, soil_type, weight)
     if settings:
-        duration = settings[0]  # Assuming the first item in settings is the duration
-        display_wash_settings(graph_var.get(), fabric_type, soil_category, fabric_weight_category, duration, result_frame)
+        washing_duration = settings[0]
+        temperature = settings[1]
+        rpm = settings[2]
+        dry_duration = settings[3]
+        quality = settings [4]
+        display_wash_settings(graph_var.get(), fabric_type, soil_type, weight, washing_duration, temperature, rpm, dry_duration, quality, result_frame)
         update_table(table, settings)
     else:
         messagebox.showerror("Error", "Entrada incorrecta.")
